@@ -25,7 +25,7 @@ public class TempMain {
             InputStream is = new FileInputStream(file);
             Map<String, Object> obj  = yaml.load(is);
             eachYaml(obj);
-            System.out.println(obj);
+            System.out.println("完成");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -36,10 +36,11 @@ public class TempMain {
         for(String key:obj.keySet()){
             pathStack.push(key+"/");
             String path = "/Volumes/JS_W_500/bare-repo/"+pathStack.stream().collect(Collectors.joining());
-            System.out.println(path);
+            //System.out.println(path);
             Object value = obj.get(key);
             if(!Files.exists(Paths.get(path))){
                 File dir = new File(path);
+                System.out.println("mkdir "+path);
                 dir.mkdir();
             }
             if(value instanceof Map) {
@@ -49,27 +50,29 @@ public class TempMain {
                     String gitPath=((String)a);
                     String gitDir = gitPath.substring(gitPath.lastIndexOf('/')+1,gitPath.length());
                     String gitFullDir = path+gitDir;
-                    System.out.println("git dir:"+gitDir);
+                    //System.out.println("git dir:"+gitDir);
                     if(Files.exists(Paths.get(gitFullDir))){
                         //git remote update
                         try {
+                            System.out.println("## IN PATH:"+gitFullDir);
+                            System.out.println("git remote update");
                             Process p = Runtime.getRuntime().exec("git remote update",null,new File(gitFullDir));
                             printProcessBack(p);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        System.out.println("fetch ed");
+                        //System.out.println("fetch ed");
                     }else{
                         //git clone --mirror
                         try {
-                            System.out.println("##"+"git clone --mirror "+gitPath);
-                            System.out.println("##"+path);
+                            System.out.println("## IN PATH:"+path);
+                            System.out.println("git clone --mirror "+gitPath);
                             Process p = Runtime.getRuntime().exec("git clone --mirror "+gitPath,null,new File(path));
                             printProcessBack(p);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        System.out.println("clone ed");
+                        //System.out.println("clone ed");
                     }
                 });
                 pathStack.pop();
